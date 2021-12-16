@@ -1,0 +1,40 @@
+python -m venv venv
+venv\Scripts\activate.bat
+
+
+pip freeze > requirements.txt
+pip install -r requirements.txt
+
+pip install django
+django-admin startproject mysite  
+
+python manage.py runserver
+
+===================================
+
+python manage.py startapp myapp
+
+Edit mysite app settings.py file and add myapp to the INSTALLED_APPS list:
+
+Create index.html file in the myapp templates folder. You have to create the templates and myapp folders too:
+
+Edit myapp app views.py file and add an index function:
+
+from django.shortcuts import render
+def index(request): # < here
+return render(request, 'myapp/index.html')
+
+Edit mysite app urls.py file add the index path to the urlpatterns list:
+
+from django.contrib import admin
+from django.urls import path
+from myapp import views as myapp_views # < here
+urlpatterns = [
+path('admin/', admin.site.urls),
+path('', myapp_views.index, name='index'), # < here
+]
+
+
+python manage.py runserver
+
+10. Examining the project structure and apps
