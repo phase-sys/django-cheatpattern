@@ -1,40 +1,180 @@
-python -m venv venv
-venv\Scripts\activate.bat
 
-
-pip freeze > requirements.txt
-pip install -r requirements.txt
-
-pip install django
-django-admin startproject mysite  
-
-python manage.py runserver
+            D J A N G O
 
 ===================================
 
-python manage.py startapp myapp
+        VIRTUAL ENVIRONMENT
 
-Edit mysite app settings.py file and add myapp to the INSTALLED_APPS list:
+python -m venv venv
+venv\Scripts\activate
 
-Create index.html file in the myapp templates folder. You have to create the templates and myapp folders too:
+===================================
 
-Edit myapp app views.py file and add an index function:
+            STARTPROJECT
 
-from django.shortcuts import render
-def index(request): # < here
-return render(request, 'myapp/index.html')
+pip install django
+django-admin startproject sitename
+python manage.py migrate # create sqlite file
 
-Edit mysite app urls.py file add the index path to the urlpatterns list:
-
-from django.contrib import admin
-from django.urls import path
-from myapp import views as myapp_views # < here
-urlpatterns = [
-path('admin/', admin.site.urls),
-path('', myapp_views.index, name='index'), # < here
-]
-
+python manage.py createsuperuser
+# password na ginawa ko -> adminDjango014
 
 python manage.py runserver
 
-10. Examining the project structure and apps
+====================================
+
+            STARTAPP
+
+python manage.py startapp appname
+    -> get the class name in apps.py config
+    -> put it in settings.py INSTALLED_APPS (appname.apps.ClassName)
+
+# create same urls.py in appname -> from django.urls import path
+
+from django.urls import path, include
+    -> path('', include('appname.urls')),
+
+=====================================
+
+                VIEWS
+
+def home(request):
+    return render(request, )
+
+=====================================
+
+                TEMPLATES
+
+create templates folder (in appname folder)
+    -> create sub folder with same name as app
+    -> html in sub folder
+    
+template -> base.html
+
+# start and end blocks
+{% block content %} {% endblock content %}
+
+# using blocks in another place
+{% extends 'appname/base.html' %}
+
+# conditional for title
+{% if title%}
+    <title>appname | {{ title }}</title>
+{% else %}
+    <title>appname</title>
+{% endif %}
+
+# link in html
+<a class="nav-item nav-link" href="{% url 'urls-name' %}">Home</a>
+
+# varialbes in html
+{{ title }}
+
+======================================
+
+                STATIC
+
+create static folder (in appname folder)
+    -> create sub folder with same name as appname
+
+# loading
+    {% load static %} above doctype
+
+# referencing
+    href="{% static 'subfolder/main.css' %}"
+
+=======================================
+
+            DATABASE
+
+~ models.py
+
+from django.db import models
+from django.utils import timezone
+from django.contrib.auth.models import User
+
+class Post(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    date_posted = models.DateTimeField(default=timezone.now)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            |-> DATABASE
+
+python manage.py makemigrations
+python manage.py migrate
+
+# look at create query
+python manage.py sqlmigrate appname migration_num
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+=======================================
+
+        REGISTER IN ADMIN
+
+# register Post in admin page
+
+admin.py
+
+from .models import Post
+
+admin.site.register(Post)
+
+==============================
+
+                TESTING
+
+python manage.py shell
+
+>>> from appname.models import Post
+>>> from django.contrib.auth.models import User
+
+>>> User.objects.all()
+
+User.objects.all()
+User.objects.first()
+User.objects.filter(username = 'phase').first()
+
+>>> user = User.objects.filter(username = 'phase').first()
+>>> user.id
+>>> user = User.objects.get(id=1)
+>>> user
+
+>>> post_1 = Post(title='appname1', content='content asdada', author_id=user.id)
+>>> post_1.save()
+>>> Post.objects.all()
+
+>>> user.post_set.all()
+# user.model_set
+
+>>> user.post_set.create(title='appname 3', content='3dqdqwe')
+
+=======================================
+
+                RENDER
+
+# IMPORT POST
+
+def home(request):
+    context = {
+        'posts': posts
+    }
+    return render(request, 'appname/home.html', context)
+
+def about(request):
+    return render(request, 'appname/about.html', {'title': 'About'})
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            |-> CONTEXT
+
+{'posts': Post.objects.all()}
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+

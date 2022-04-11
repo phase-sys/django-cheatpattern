@@ -1,0 +1,20 @@
+Step 1:
+    Setup Django
+
+Step 2:
+    Setup Postgres
+        > dbDBdapDAP014
+        | create database
+        | change settings.py ~ databases
+            | ENGINE: sqlite -> postgresql
+            | NAME: 'dbname'
+            | 'USER': 'postgres',
+            | 'PASSWORD': 'dbDBdapDAP014',
+            | 'HOST': 'localhost',
+            | 'PORT': # optional
+            | put in .env file DB_NAME = dbname
+        ~
+        | pip install psycopg2
+
+Step 3:
+    
